@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import "./App.css";
 
 const App: React.FC = () => {
@@ -14,7 +15,7 @@ const App: React.FC = () => {
     setValues({ ...Values, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const { name, contactNumber, mail, message } = Values;
@@ -37,66 +38,82 @@ const App: React.FC = () => {
       return;
     }
 
-    console.log(Values);
+    try {
+      const response = await axios.post("http://localhost:5000/api/message", {
+        name,
+        contactNumber,
+        mail,
+        message
+      });
 
-    alert("Form submitted successfully!");
+      alert("Form submitted successfully!");
+      console.log(response.data);
 
-    // Reset form values
-    setValues({ 
-      name: "", 
-      contactNumber: "", 
-      mail: "", 
-      message: "" });
+      setValues({
+        name: "",
+        contactNumber: "",
+        mail: "",
+        message: ""
+      });
+    } catch (error: any) {
+      console.error(error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
-    <div className='form d-flex justify-content-center align-items-center'>
-      <div className='contact-card px-3 py-2'>
-        <h1>locker rOOm</h1>
-
-        <form onSubmit={handleSubmit} className='contact-form'>
-          <div>
-            <h5>Your Name</h5>
-            <input
-              type='text'
-              name='name'
-              value={Values.name}
-              onChange={change}
-            />
-          </div>
-
-          <div>
-            <h5>Contact Number</h5>
-            <input
-              type='text'
-              name='contactNumber'
-              value={Values.contactNumber}
-              onChange={change}
-            />
-          </div>
-
-          <div>
-            <h5>E-Mail</h5>
-            <input
-              type='text'
-              name='mail'
-              value={Values.mail}
-              onChange={change}
-            />
-          </div>
-
-          <div>
-            <h5>Message for Me</h5>
-            <textarea
-              name='message'
-              value={Values.message}
-              onChange={change}
-            />
-          </div>
-
-          <button type='submit' className='submit-btn'>Send Message</button>
-        </form>
+    <div className='form'>
+      <div className='logo-container'>
+        <img
+          src="https://images.steamusercontent.com/ugc/481146537300460925/44352B4287F4B53D14447A3E35F062FFEE50F41D/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false"
+          alt="Logo"
+          className="logo-img"
+        />
+        <h1 className="heading">Connect ME</h1>
       </div>
+
+      <form onSubmit={handleSubmit} className='contact-form'>
+        <div className='form-group'>
+          <h5>Your Name</h5>
+          <input
+            type='text'
+            name='name'
+            value={Values.name}
+            onChange={change}
+          />
+        </div>
+
+        <div className='form-group'>
+          <h5>Contact Number</h5>
+          <input
+            type='text'
+            name='contactNumber'
+            value={Values.contactNumber}
+            onChange={change}
+          />
+        </div>
+
+        <div className='form-group'>
+          <h5>E-Mail</h5>
+          <input
+            type='text'
+            name='mail'
+            value={Values.mail}
+            onChange={change}
+          />
+        </div>
+
+        <div className='form-group'>
+          <h5>Message for Me</h5>
+          <textarea
+            name='message'
+            value={Values.message}
+            onChange={change}
+          />
+        </div>
+
+        <button type='submit' className='submit-btn'>Send Message</button>
+      </form>
     </div>
   );
 };
